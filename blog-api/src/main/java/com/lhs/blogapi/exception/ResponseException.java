@@ -3,6 +3,7 @@ package com.lhs.blogapi.exception;
 import com.lhs.blogapi.controller.dto.ResForm;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,11 @@ public class ResponseException {
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     ResponseEntity<ResForm<String>> handlerNoSuchElementException(NoSuchElementException e){
+        return createResult(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.name(), e.getMessage());
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    ResponseEntity<ResForm<String>> handlerUsernameNotFoundException(UsernameNotFoundException e){
         return createResult(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
 

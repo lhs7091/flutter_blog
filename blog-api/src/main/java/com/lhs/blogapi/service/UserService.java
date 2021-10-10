@@ -5,26 +5,32 @@ import com.lhs.blogapi.domain.Role;
 import com.lhs.blogapi.domain.User;
 import com.lhs.blogapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserService {
+@Slf4j
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 회원가입
     public User signUp(User user) {
         // username, email 중복체크
         duplicationCheck(user.getUsername(), user.getEmail());
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -65,7 +71,8 @@ public class UserService {
 
         duplicationCheck(form.getUsername(), form.getEmail());
 
-        if(!findUser.getPassword().equals(form.getCurrentPassword())){
+        boolean isPasswordMatch = passwordEncoder.matches(form.getCurrentPassword(), findUser.getPassword());
+        if(!isPasswordMatch){
             throw new IllegalArgumentException("비밀번호가 잘못되었습니다.");
         }
 
@@ -78,7 +85,7 @@ public class UserService {
         }
 
         if(form.getNewPassword() != null && !form.getNewPassword().isEmpty()){
-            findUser.setPassword(form.getNewPassword());
+            findUser.setPassword(passwordEncoder.encode(form.getNewPassword()));
         }
 
         return userRepository.save(findUser);
@@ -100,5 +107,20 @@ public class UserService {
                 userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("username 또는 email이 이미 존재합니다.");
         }
+    }
+
+    // 로그인하기
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username).orElse(null);
+        if(user == null){
+            log.error("회원없음");
+            throw new UsernameNotFoundException("회원없음");
+        }
+
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRoles().name()));
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 }
