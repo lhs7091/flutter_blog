@@ -29,7 +29,7 @@ public class UserService implements UserDetailsService {
     // 회원가입
     public User signUp(User user) {
         // username, email 중복체크
-        duplicationCheck(user.getUsername(), user.getEmail());
+        duplicationCheck(0L, user.getUsername(), user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
         }
 
-        duplicationCheck(form.getUsername(), form.getEmail());
+        duplicationCheck(userId, form.getUsername(), form.getEmail());
 
         boolean isPasswordMatch = passwordEncoder.matches(form.getCurrentPassword(), findUser.getPassword());
         if(!isPasswordMatch){
@@ -102,9 +102,12 @@ public class UserService implements UserDetailsService {
     }
 
     // username, email 중복체크
-    public void duplicationCheck(String username, String email){
-        if (userRepository.findByUsername(username).isPresent() ||
-                userRepository.findByEmail(email).isPresent()) {
+    public void duplicationCheck(Long userId, String username, String email){
+        User myInfo = userRepository.findById(userId).orElse(new User());
+
+        if ((userRepository.findByUsername(username).isPresent() && !username.equals(myInfo.getUsername())) ||
+                (userRepository.findByEmail(email).isPresent() && !email.equals(myInfo.getEmail()))) {
+
             throw new IllegalArgumentException("username 또는 email이 이미 존재합니다.");
         }
     }

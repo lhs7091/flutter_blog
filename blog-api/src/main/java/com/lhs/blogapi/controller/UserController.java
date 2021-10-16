@@ -43,13 +43,14 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.CREATED)
     ResponseEntity<ResForm<ResUserInfo>> signUp(@RequestBody SignUpForm form){
         User saveUser = userService.signUp(new User(null, form.getUsername(), form.getEmail(), form.getPassword(), Role.ROLE_USER, null, null));
-        return createResult(1, "SUCCESS", changeUserToUserInfoClass(saveUser), "post");
+        return createResult(200, "SUCCESS", changeUserToUserInfoClass(saveUser), "post");
     }
 
     // 회원정보조회
     @GetMapping("/user/{username}")
-    void findUser(@PathVariable String username){
-        userService.findOneUser(username);
+    ResponseEntity<ResForm<ResUserInfo>> findUser(@PathVariable String username){
+        User findUser = userService.findOneUser(username);
+        return createResult(200, "SUCCESS", changeUserToUserInfoClass(findUser), "get");
     }
 
     // 회원전체조회
@@ -62,21 +63,21 @@ public class UserController {
     @PutMapping("/admin/auth/{userId}/{role}")
     ResponseEntity<ResForm<ResUserInfo>> changeAuth(@PathVariable Long userId, @PathVariable String role){
         User updateRoleUser = userService.changeAuth(userId, role);
-        return createResult(1, "SUCCESS", changeUserToUserInfoClass(updateRoleUser), "put");
+        return createResult(200, "SUCCESS", changeUserToUserInfoClass(updateRoleUser), "put");
     }
 
     // 회원 정보 변경
     @PutMapping("/user/{userId}")
     ResponseEntity<ResForm<ResUserInfo>> changeUserInfo(@PathVariable Long userId, @RequestBody UserModifyForm form){
         User updateUserInfo = userService.changeUserInfo(userId, form);
-        return createResult(1, "SUCCESS", changeUserToUserInfoClass(updateUserInfo), "put");
+        return createResult(200, "SUCCESS", changeUserToUserInfoClass(updateUserInfo), "put");
     }
 
     // 회원탈퇴
     @DeleteMapping("/user/{userId}")
     ResponseEntity<ResForm<String>> deleteUser(@PathVariable Long userId){
         userService.deleteUser(userId);
-        return createResult(1, "SUCCESS", String.format("회원삭제 완료 userId : %s", userId), "delete");
+        return createResult(200, "SUCCESS", String.format("회원삭제 완료 userId : %s", userId), "delete");
     }
 
     <T> ResponseEntity<ResForm<T>> createResult(int code, String msg, T data, String mappingType){

@@ -3,6 +3,7 @@ package com.lhs.blogapi.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lhs.blogapi.repository.UserRepository;
 import com.lhs.blogapi.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
+    private AuthenticationManager authenticationManager;
     public final ObjectMapper om = new ObjectMapper();
+
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManagerBean, UserRepository userRepository) {
+        this.authenticationManager = authenticationManagerBean;
+        this.userRepository = userRepository;
+    }
 
     /**
      * 처음 /api/login으로 요청하면 이쪽으로 오게 된다.
@@ -102,6 +109,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", access_token);
         tokens.put("refresh_token", refresh_token);
+        com.lhs.blogapi.domain.User user = userRepository.findByUsername(principal.getUsername()).get();
+        tokens.put("user_id", user.getId().toString());
+        tokens.put("user_name", user.getUsername());
+        tokens.put("user_email", user.getEmail());
+        tokens.put("user_role", user.getRoles().toString());
 
         om.writeValue(response.getOutputStream(), tokens);
     }
