@@ -59,3 +59,24 @@
 | 4   | delete user             | delete       | /api/v1/user/{userId}              |                                                                                                                                                                                                                                                                      |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": "회원삭제 완료 userId : 1"`<br>`}`|
 
 
+## Global URL Implement
+1. Install npm
+2. npm install -g localtunnel
+3. lt --port 8080
+```
+aaa@aaa-MacBookAir ~ % npm install -g localtunnel
+
+added 22 packages, and audited 22 packages in 2s
+
+3 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice 
+npm notice New major version of npm available! 7.0.15 -> 8.1.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v8.1.0
+npm notice Run npm install -g npm@8.1.0 to update!
+npm notice 
+aaa@aaa-MacBookAir ~ % lt --port 8080            
+your url is: https://bright-chicken-22.loca.lt
+```
