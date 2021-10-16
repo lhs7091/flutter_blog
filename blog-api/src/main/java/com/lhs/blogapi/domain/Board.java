@@ -5,6 +5,8 @@ import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,5 +39,9 @@ public class Board {
     @OrderBy("created desc")
     private List<Reply> replys = new ArrayList<>();
 
+    @CreationTimestamp
     private LocalDateTime created;
+
+    @UpdateTimestamp
+    private LocalDateTime updated;
 }

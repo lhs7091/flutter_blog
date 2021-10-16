@@ -1,5 +1,6 @@
 package com.lhs.blogapi.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +27,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnoreProperties("password")
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)

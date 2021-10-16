@@ -1,7 +1,5 @@
 package com.lhs.blogapi.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lhs.blogapi.controller.dto.SignUpForm;
 import com.lhs.blogapi.controller.dto.UserModifyForm;
@@ -9,26 +7,20 @@ import com.lhs.blogapi.domain.Role;
 import com.lhs.blogapi.domain.User;
 import com.lhs.blogapi.repository.UserRepository;
 import com.lhs.blogapi.service.UserService;
-import com.lhs.blogapi.util.Utils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
+import static com.lhs.blogapi.common.CommonUtil.createToken;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -54,9 +46,6 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @AfterEach
     void clearDB() {
         userRepository.deleteAll();
@@ -79,7 +68,7 @@ class UserControllerTest {
     @Test
     void 회원가입_중복체크에러() throws Exception {
         User user1 = new User(null, "aaa", "aaa@aaa.com", "aaa", Role.ROLE_USER, null, null);
-        User saveUser1 = userService.signUp(user1);
+        userService.signUp(user1);
         SignUpForm signUpForm = new SignUpForm("aaa", "aaa@aaa.com", "aaa");
         String content = objectMapper.writeValueAsString(signUpForm);
 
@@ -90,7 +79,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
 
-        assertThat(res.andReturn().getResolvedException().getMessage())
+        assertThat(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage())
                 .isEqualTo("username 또는 email이 이미 존재합니다.");
     }
 
@@ -131,7 +120,7 @@ class UserControllerTest {
                 .andDo(log());
 
         assertThat("해당 유저 또는 role이 존재하지 않습니다.")
-                .isEqualTo(res.andReturn().getResolvedException().getMessage());
+                .isEqualTo(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage());
     }
 
     @Test
@@ -146,7 +135,7 @@ class UserControllerTest {
                 .andDo(log());
 
         assertThat("해당 유저 또는 role이 존재하지 않습니다.")
-                .isEqualTo(res.andReturn().getResolvedException().getMessage());
+                .isEqualTo(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage());
     }
 
     @Test
@@ -169,7 +158,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("SUCCESS"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value(userModifyForm.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.email").value(userModifyForm.getEmail()));
@@ -195,7 +184,7 @@ class UserControllerTest {
                 .accept(MediaType.APPLICATION_JSON));
 
         res.andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("SUCCESS"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.username").value(userModifyForm.getUsername()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.email").value(userModifyForm.getEmail()));
@@ -226,7 +215,7 @@ class UserControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andDo(print());
 
-        assertThat(res.andReturn().getResolvedException().getMessage())
+        assertThat(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage())
                 .isEqualTo("비밀번호가 잘못되었습니다.");
     }
 
@@ -237,7 +226,7 @@ class UserControllerTest {
         User saveUser1 = userService.signUp(user1);
 
         User user2 = new User(null, "bbb", "bbb@bbb.com", "bbb", Role.ROLE_USER, null, null);
-        User saveUser2 = userService.signUp(user2);
+        userService.signUp(user2);
 
         String url = String.format("/api/v1/user/%s", saveUser1.getId());
         UserModifyForm userModifyForm = new UserModifyForm(user2.getUsername(), user2.getEmail(), "aaa", "");
@@ -254,7 +243,7 @@ class UserControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andDo(print());
 
-        assertThat(res.andReturn().getResolvedException().getMessage())
+        assertThat(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage())
                 .isEqualTo("username 또는 email이 이미 존재합니다.");
     }
 
@@ -290,28 +279,8 @@ class UserControllerTest {
                 .andExpect(status().isInternalServerError());
 
         // then
-        assertThat(res.andReturn().getResolvedException().getMessage())
+        assertThat(Objects.requireNonNull(res.andReturn().getResolvedException()).getMessage())
                 .isEqualTo("해당 회원이 존재하지 않습니다.");
-    }
-
-    public String createToken(String username, Role role) {
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role.name()));
-        Algorithm algorithm = Algorithm.HMAC512(Utils.SECRET_KEY);
-        String token = JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + Utils.ACC_EXPIRE))
-                .withIssuer("/api/login")
-                .withClaim("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(algorithm);
-
-        return Utils.BEARER + token;
-    }
-
-    @Test
-    void 비밀번호암호화(){
-        String encodePass = passwordEncoder.encode("test");
-        System.out.println(passwordEncoder.matches("test", encodePass));
     }
 
 }

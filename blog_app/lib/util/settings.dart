@@ -1,4 +1,4 @@
-const host = "https://yellow-catfish-88.loca.lt";
+const host = "https://selfish-rat-98.loca.lt";
 
 String access_key = "";
 String refresh_token = "";
