@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:validators/validators.dart';
 
 class SignUpScreen extends StatelessWidget {
+  final UserController _userController = UserController();
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -105,14 +106,17 @@ class SignUpScreen extends StatelessWidget {
               onPressed: () async {
                 // validation check clear
                 if (_formKey.currentState.validate()) {
-                  // int result = await _userController.login(
-                  //     _usernameController.text.trim(),
-                  //     _passwordController.text.trim());
-                  // // 로그인 완료
-                  // if (result == 1)
-                  showAlertDialog(context, "title", "content");
-                } //else
-                // Get.snackbar("로그인 시도", "로그인 실패");
+                  var result = await _userController.signUp(
+                      _usernameController.text.trim(),
+                      _emailController.text.trim(),
+                      _passwordController.text.trim());
+                  // 회원가입완료
+                  if (result == 1)
+                    showAlertDialog(context, "Sign Up SUCCESS", "Please login",
+                        sucessSignUp(context), "OK");
+                  else
+                    Get.snackbar("SignUp Failed", "$result");
+                }
               },
               child: Text("ENTER"),
             ),
@@ -122,26 +126,27 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  showAlertDialog(BuildContext context, String title, String content) {
-    Widget okButton = TextButton(
-      onPressed: () {
-        Get.off(() => LoginScreen());
-      },
-      child: Text("OK"),
-    );
+  // showAlertDialog(BuildContext context, String title, String content) {
+  //   Widget okButton = TextButton(
+  //     onPressed: () {
+  //       Navigator.pop(context);
+  //       Get.off(() => LoginScreen());
+  //     },
+  //     child: Text("OK"),
+  //   );
 
-    AlertDialog alertDialog = AlertDialog(
-      title: Text("$title"),
-      content: Text("$content"),
-      actions: [
-        okButton,
-      ],
-    );
+  //   AlertDialog alertDialog = AlertDialog(
+  //     title: Text("$title"),
+  //     content: Text("$content"),
+  //     actions: [
+  //       okButton,
+  //     ],
+  //   );
 
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alertDialog;
-        });
-  }
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return alertDialog;
+  //       });
+  // }
 }

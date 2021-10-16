@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:validators/validators.dart';
 
 class UserInfoEditScreen extends StatelessWidget {
+  final UserController _userController = Get.find();
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -12,10 +14,11 @@ class UserInfoEditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _usernameController.text = "username";
-    _emailController.text = "test@test.com";
+    _usernameController.text = _userController.token.value.username;
+    _emailController.text = _userController.token.value.userEmail;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: Container(
         alignment: Alignment.center,
@@ -24,7 +27,7 @@ class UserInfoEditScreen extends StatelessWidget {
           children: [
             _buildTitle(),
             SizedBox(height: 10),
-            _buildForm(),
+            _buildForm(context),
           ],
         ),
       ),
@@ -40,7 +43,7 @@ class UserInfoEditScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(BuildContext context) {
     return Container(
       width: 330,
       decoration: BoxDecoration(
@@ -109,6 +112,9 @@ class UserInfoEditScreen extends StatelessWidget {
                 SizedBox(width: 20),
                 Expanded(
                   child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: "Required",
+                    ),
                     textAlign: TextAlign.left,
                     controller: _currentPassController,
                     validator: (value) {
@@ -135,6 +141,9 @@ class UserInfoEditScreen extends StatelessWidget {
                 SizedBox(width: 20),
                 Expanded(
                   child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: "when you change, required",
+                    ),
                     textAlign: TextAlign.left,
                     controller: _newPassController,
                     validator: (value) {
@@ -158,10 +167,29 @@ class UserInfoEditScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
                 // validation check
                 if (_formKey.currentState.validate()) {
-                  Get.snackbar("Edit Profile", "Fail");
+                  String result = await _userController.editUserProfile(
+                      _usernameController.text.trim(),
+                      _emailController.text.trim(),
+                      _currentPassController.text.trim(),
+                      _newPassController.text.trim());
+                  if (result == "1")
+                    Get.off(() => UserInfoScreen());
+                  else if (result == "-1") {
+                    Get.snackbar("Edit Failed",
+                        "Please try again due to internal problem");
+                  } else if (result.startsWith(tokenExpiredMsg)) {
+                    showAlertDialog(
+                        context,
+                        tokenExpriedTitle,
+                        tokenExpriedContent,
+                        expiredToken(context),
+                        tokenExpriedBtn);
+                  } else {
+                    Get.snackbar("Edit Failed", "$result");
+                  }
                 }
               },
               child: Text("Edit"),

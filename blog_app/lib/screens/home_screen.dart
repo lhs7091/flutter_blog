@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
+  final UserController _userController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +19,8 @@ class HomeScreen extends StatelessWidget {
                   break;
                 case 'LOGOUT':
                   print('LOGOUT');
+                  _userController.logout();
+                  Get.off(() => LoginScreen());
                   break;
                 default:
               }
@@ -28,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                 child: Text('PROFILE'),
               ),
               const PopupMenuItem<String>(
-                value: 'logout',
+                value: 'LOGOUT',
                 child: Text('LOG OUT'),
               ),
             ],

@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:validators/validators.dart';
 
 class LoginScreen extends StatelessWidget {
+  final UserController _userController = Get.put(UserController());
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -107,14 +109,16 @@ class LoginScreen extends StatelessWidget {
               onPressed: () async {
                 // validation check clear
                 if (_formKey.currentState.validate()) {
-                  // int result = await _userController.login(
-                  //     _usernameController.text.trim(),
-                  //     _passwordController.text.trim());
-                  // // 로그인 완료
-                  // if (result == 1)
-                  Get.to(() => HomeScreen());
-                } //else
-                // Get.snackbar("로그인 시도", "로그인 실패");
+                  int result = await _userController.login(
+                      _usernameController.text.trim(),
+                      _passwordController.text.trim());
+                  // 로그인 완료
+                  if (result == 1)
+                    Get.off(() => HomeScreen());
+                  else
+                    Get.snackbar("Login Failed",
+                        "please check username or password again");
+                }
               },
               child: Text("ENTER"),
             ),

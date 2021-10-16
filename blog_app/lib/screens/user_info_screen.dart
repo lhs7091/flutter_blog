@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserInfoScreen extends StatelessWidget {
+  final UserController _userController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,6 +13,7 @@ class UserInfoScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
+              Navigator.pop(context);
               Get.to(() => UserInfoEditScreen());
             },
           ),
@@ -23,7 +26,7 @@ class UserInfoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "username",
+              "${_userController.token.value.username}",
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold,
@@ -31,7 +34,7 @@ class UserInfoScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              "email@email.com",
+              "${_userController.token.value.userEmail}",
               style: TextStyle(
                 fontSize: 20,
               ),
