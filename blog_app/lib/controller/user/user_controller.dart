@@ -22,28 +22,32 @@ class UserController extends GetxController {
     LoginResponseDto loginResponseDto =
         await _userRepository.login(username, password);
 
-    if (loginResponseDto != null) {
+    try {
       this.token.value = loginResponseDto;
-      access_key = loginResponseDto.accessToken;
-      refresh_token = loginResponseDto.refreshToken;
+      accessKey = loginResponseDto.accessToken!;
+      refreshKey = loginResponseDto.refreshToken!;
       return 1;
+    } catch (e) {
+      return -1;
     }
-    return -1;
   }
 
   void logout() {
     log("logout");
-    this.token.value = null;
+    this.token.value = LoginResponseDto();
   }
 
   Future<String> editUserProfile(String username, String email,
       String currentPassword, String newPassword) async {
     var responseData = await _userRepository.changeUserInfo(
-        this.token.value.userId, username, email, currentPassword, newPassword);
+        this.token.value.userId!,
+        username,
+        email,
+        currentPassword,
+        newPassword);
     print(responseData.runtimeType);
 
-    if (responseData.runtimeType == UserInfoResponseDto &&
-        responseData != null) {
+    if (responseData.runtimeType == User && responseData != null) {
       this.token.value.username = responseData.username;
       this.token.value.userEmail = responseData.email;
       return "1";
@@ -58,8 +62,8 @@ class UserController extends GetxController {
     var res = await _userRepository.refreshToken();
 
     if (res != null) {
-      access_key = res["access_token"];
-      refresh_token = res["refresh_token"];
+      accessKey = res["access_token"];
+      refreshKey = res["refresh_token"];
       return 1;
     }
     return -1;

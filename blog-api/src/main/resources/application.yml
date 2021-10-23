@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  jackson:
+    serialization:
+      fail-on-emptybeans: false
 
 logging:
   level:

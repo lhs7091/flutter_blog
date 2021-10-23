@@ -55,7 +55,7 @@ class SignUpScreen extends StatelessWidget {
               textAlign: TextAlign.left,
               controller: _usernameController,
               validator: (value) {
-                if (!isAlphanumeric(value))
+                if (!isAlphanumeric(value!))
                   return "please input alphabet or number";
                 else if (isNull(value))
                   return "please input usernane";
@@ -71,7 +71,7 @@ class SignUpScreen extends StatelessWidget {
               textAlign: TextAlign.left,
               controller: _emailController,
               validator: (value) {
-                if (!isEmail(value))
+                if (!isEmail(value!))
                   return "wrong email type";
                 else if (isNull(value))
                   return "please input email";
@@ -105,7 +105,7 @@ class SignUpScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 // validation check clear
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   var result = await _userController.signUp(
                       _usernameController.text.trim(),
                       _emailController.text.trim(),

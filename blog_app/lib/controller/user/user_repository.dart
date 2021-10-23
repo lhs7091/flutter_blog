@@ -11,15 +11,14 @@ class UserRepository {
     Response res = await _userProvider.signUp(signUpRequestDto.toJson());
 
     try {
-      log(res.bodyString);
-      final convertBody = json.decode(res.bodyString);
+      final convertBody = json.decode(res.bodyString!);
 
       ResponseDto responseDto = ResponseDto.fromJson(convertBody);
 
       return responseDto;
     } catch (e) {
       log("convertUtf8 error : $e");
-      return null;
+      return ResponseDto();
     }
   }
 
@@ -30,12 +29,12 @@ class UserRepository {
     try {
       final convertBody = json.decode(res.body.toString());
       if (convertBody == null) {
-        return null;
+        return LoginResponseDto();
       }
       return LoginResponseDto.fromJson(convertBody);
     } catch (e) {
       log("convertUtf8 error : $e");
-      return null;
+      return LoginResponseDto();
     }
   }
 
@@ -47,13 +46,12 @@ class UserRepository {
     Response res = await _userProvider.changeUserInfo(userId, dto.toJson());
 
     try {
-      final convertBody = json.decode(res.bodyString);
+      final convertBody = json.decode(res.bodyString!);
       if (res.statusCode == 200) {
         ResponseDto responseDto = ResponseDto.fromJson(convertBody);
 
         if (responseDto.code == 200) {
-          UserInfoResponseDto userInfoResponseDto =
-              UserInfoResponseDto.fromJson(responseDto.data);
+          User userInfoResponseDto = User.fromJson(responseDto.data);
 
           log(userInfoResponseDto.toString());
 
@@ -82,7 +80,7 @@ class UserRepository {
     Response res = await _userProvider.refreshToken();
 
     try {
-      final convertBody = json.decode(res.bodyString);
+      final convertBody = json.decode(res.bodyString!);
       if (convertBody == null) {
         return null;
       }

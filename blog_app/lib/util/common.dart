@@ -6,12 +6,13 @@ const String tokenExpiredMsg = "The Token has expired";
 const String tokenExpriedTitle = "Authentication Expired";
 const String tokenExpriedContent = "Please renew Authentication";
 const String tokenExpriedBtn = "RENEW";
+const String BEARER = "Bearer ";
 
 showAlertDialog(BuildContext context, String title, String content,
     dynamic onPressed, String ok) {
   Widget okButton = TextButton(
     onPressed: onPressed,
-    child: Text("${ok}"),
+    child: Text("OK"),
   );
 
   AlertDialog alertDialog = AlertDialog(

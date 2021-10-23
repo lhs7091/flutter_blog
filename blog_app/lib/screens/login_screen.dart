@@ -74,7 +74,7 @@ class LoginScreen extends StatelessWidget {
               textAlign: TextAlign.left,
               controller: _usernameController,
               validator: (value) {
-                if (!isAlphanumeric(value))
+                if (!isAlphanumeric(value!))
                   return "please input alphabet or number";
                 else if (isNull(value))
                   return "please input usernane";
@@ -108,7 +108,7 @@ class LoginScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 // validation check clear
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   int result = await _userController.login(
                       _usernameController.text.trim(),
                       _passwordController.text.trim());

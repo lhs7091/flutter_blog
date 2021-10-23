@@ -1,4 +1,4 @@
-const host = "https://selfish-rat-98.loca.lt";
+const host = "https://slippery-cobra-41.loca.lt";
 
-String access_key = "";
-String refresh_token = "";
+String accessKey = "";
+String refreshKey = "";

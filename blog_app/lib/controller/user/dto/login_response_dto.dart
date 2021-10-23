@@ -1,14 +1,14 @@
 class LoginResponseDto {
-  String accessToken;
-  String refreshToken;
-  String userId;
-  String username;
-  String userEmail;
-  String userRole;
+  String? accessToken;
+  String? refreshToken;
+  String? userId;
+  String? username;
+  String? userEmail;
+  String? userRole;
 
   LoginResponseDto();
 
-  LoginResponseDto.fromJson(Map<String, dynamic> json)
+  LoginResponseDto.fromJson(Map<dynamic, dynamic> json)
       : accessToken = json["access_token"],
         refreshToken = json["refresh_token"],
         userId = json["user_id"],

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.lhs.blogapi.util.Utils.headerKey;
+import static com.lhs.blogapi.util.Utils.headerValue;
+
 @RestController
 @RequestMapping("/api/v1/board")
 @Slf4j
@@ -21,8 +24,9 @@ public class BoardController {
 
     // 목록보기
     @GetMapping("")
-    public List<Board> getAllPosts(){
-        return boardService.getAllPosts();
+    public ResponseEntity<ResForm<List<Board>>> getAllPosts(){
+        List<Board> boards = boardService.getAllPosts();
+        return createResult(200, "SUCCESS", boards, "get");
     }
 
     // 글쓰기
@@ -33,8 +37,6 @@ public class BoardController {
     }
 
     <T> ResponseEntity<ResForm<T>> createResult(int code, String msg, T data, String mappingType){
-        String headerKey = "Content-Type";
-        String headerValue = "application/json; charset=UTF-8";
         if("post".equals(mappingType)){
             return ResponseEntity.created(null).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
         }
