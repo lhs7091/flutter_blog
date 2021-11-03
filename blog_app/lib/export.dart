@@ -27,6 +27,9 @@ export './screens/user_info_screen.dart';
 export './screens/user_info_edit_screen.dart';
 export './screens/board_write_screen.dart';
 
+// widget
+export './widget/board_card_widget.dart';
+
 // util
 export './util/style.dart';
 export './util/common.dart';

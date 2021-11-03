@@ -34,4 +34,24 @@ public class BoardService {
 
         return saveBoard;
     }
+
+    public Board updateBoard(Long boardid, BoardForm boardForm) {
+        Board findBoard = boardRepository.findById(boardid).orElse(null);
+        if (findBoard == null){
+            throw new IllegalArgumentException("Illegal Board Information");
+        }
+        findBoard.setTitle(boardForm.getTitle());
+        findBoard.setContent(boardForm.getContent());
+        Board updateBoard = boardRepository.save(findBoard);
+
+        return updateBoard;
+    }
+
+    public void deleteBoard(Long boardid) {
+        Board findBoard = boardRepository.findById(boardid).orElse(null);
+        if (findBoard == null){
+            throw new IllegalArgumentException("Illegal Board Information");
+        }
+        boardRepository.delete(findBoard);
+    }
 }

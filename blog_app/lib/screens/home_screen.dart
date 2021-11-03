@@ -4,14 +4,12 @@ import 'package:get/get.dart';
 
 // ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
-  final UserController _userController = Get.find();
-  final BoardController _boardController = Get.put(BoardController());
+  UserController _userController = Get.find();
+  BoardController _boardController = Get.put(BoardController());
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  List<Board>? boards;
 
   @override
   Widget build(BuildContext context) {
-    boards = _boardController.boards;
     return Scaffold(
       appBar: AppBar(
         title: Text(_userController.token.value.username.toString()),
@@ -32,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                 case 'LOGOUT':
                   print('LOGOUT');
                   _userController.logout();
-                  Get.off(() => LoginScreen());
+                  Get.offAll(LoginScreen());
                   break;
                 default:
               }
@@ -50,22 +48,24 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Obx(() => RefreshIndicator(
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80, left: 20, right: 20),
-            itemCount: boards!.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () async {
-                  await _boardController.getAllBoards();
-                },
-                child: buildBoardCard(boards![index]),
-              );
-            },
-          ),
+      body: Obx(
+        () => RefreshIndicator(
+          child: _boardController.loading.value
+              ? Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  padding:
+                      const EdgeInsets.only(bottom: 80, left: 20, right: 20),
+                  itemCount: _boardController.boards.length,
+                  itemBuilder: (context, index) {
+                    return buildBoardCard(_boardController
+                        .boards[_boardController.boards.length - index - 1]);
+                  },
+                ),
           onRefresh: () async {
             await _boardController.getAllBoards();
-          })),
+          },
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.to(() => BoardWriteScreen());
@@ -80,26 +80,61 @@ class HomeScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Style.LightGrey,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
-              offset: Offset(0, 1),
+              offset: Offset(0, 3),
             )
           ]),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "${board.title!}",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "${board.title!}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              _userController.token.value.userId ==
+                      board.user!.userid.toString()
+                  ? IconButton(
+                      onPressed: () {
+                        Get.to(() => BoardWriteScreen(board: board));
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        size: 20,
+                      ),
+                    )
+                  : Container(),
+              _userController.token.value.userId ==
+                      board.user!.userid.toString()
+                  ? IconButton(
+                      onPressed: () async {
+                        var result =
+                            await _boardController.deleteBoard(board.id);
+                        if (result != 1) {
+                          Get.snackbar("Failed", result);
+                        }
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Style.AccentRed,
+                        size: 20,
+                      ),
+                    )
+                  : Container(),
+            ],
           ),
           SizedBox(height: 15),
           Row(
@@ -111,24 +146,9 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(width: 20),
+              SizedBox(width: 40),
               Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      board.content!,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 10),
-                    buildBoardInfo(board),
-                  ],
-                ),
+                child: BoardCardWidget(board: board),
               ),
             ],
           ),

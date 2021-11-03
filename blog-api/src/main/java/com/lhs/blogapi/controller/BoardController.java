@@ -36,6 +36,19 @@ public class BoardController {
         return createResult(200, "SUCCESS", board, "post");
     }
 
+    // 글 수정하기
+    @PutMapping("/{boardid}")
+    public ResponseEntity<ResForm<Board>> updateBoard(@PathVariable Long boardid, @RequestBody BoardForm boardForm){
+        Board updateBoard = boardService.updateBoard(boardid, boardForm);
+        return createResult(200, "SUCCESS", updateBoard, "put");
+    }
+
+    // 글 삭제하기
+    @DeleteMapping("/{boardid}")
+    public ResponseEntity<ResForm<Board>> updateBoard(@PathVariable Long boardid){
+        boardService.deleteBoard(boardid);
+        return createResult(200, "SUCCESS", null, "delete");
+    }
     <T> ResponseEntity<ResForm<T>> createResult(int code, String msg, T data, String mappingType){
         if("post".equals(mappingType)){
             return ResponseEntity.created(null).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));

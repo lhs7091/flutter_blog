@@ -60,6 +60,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                 }catch(Exception e){
                     log.error("토큰정보 오류");
+                    System.out.println(e);
                     response.setHeader("error", e.getMessage());
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

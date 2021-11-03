@@ -25,15 +25,26 @@ class Board {
   DateTime? created;
   DateTime? updated;
 
-  Board(this.id, this.title, this.content, this.user, this.replys, this.created,
-      this.updated);
+  Board(
+      {this.id,
+      this.title,
+      this.content,
+      this.user,
+      this.replys,
+      this.created,
+      this.updated});
 
   Board.fromJson(Map<dynamic, dynamic> json)
       : id = json["id"],
         title = json["title"],
         content = json["content"],
         user = User.fromJson(json["user"]),
-        replys = ["test1", 'test2'],
+        replys = null,
         created = DateFormat('yyyy-mm-dd').parse(json["created"]),
         updated = DateFormat('yyyy-mm-dd').parse(json["updated"]);
+
+  Map<String, dynamic> toJson() => {
+        "title": title!,
+        "content": content!,
+      };
 }

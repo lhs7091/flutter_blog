@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:validators/validators.dart';
 
+// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
-  final UserController _userController = Get.put(UserController());
+  UserController _userController = Get.put(UserController());
 
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();

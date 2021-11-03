@@ -48,15 +48,18 @@ public class UserController {
 
     // 회원정보조회
     @GetMapping("/user/{username}")
+    // TODO : https://www.youtube.com/watch?v=9So7UcSRqIc&ab_channel=FlutterMentor, SearchDelegate class of Flutter
     ResponseEntity<ResForm<ResUserInfo>> findUser(@PathVariable String username){
         User findUser = userService.findOneUser(username);
         return createResult(200, "SUCCESS", changeUserToUserInfoClass(findUser), "get");
     }
 
     // 회원전체조회
-    @GetMapping("/user/all")
-    void findAllUser(){
-        userService.findAllUser();
+    @GetMapping("/user")
+    ResponseEntity<ResForm<List<ResUserInfo>>> findAllUser(){
+        List<User> findAllUser = userService.findAllUser();
+        List<ResUserInfo> resUserInfoList = findAllUser.stream().map(u -> changeUserToUserInfoClass(u)).collect(Collectors.toList());
+        return createResult(200, "SUCCESS", resUserInfoList, "get");
     }
 
     // 회원 역할 변경

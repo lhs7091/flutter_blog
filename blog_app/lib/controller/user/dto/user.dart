@@ -9,4 +9,7 @@ class User {
         username = json["username"],
         email = json["email"],
         role = json["roles"];
+
+  Map<String, dynamic> toJson() =>
+      {"id": userid, "username": username, "email": email, "role": role};
 }
