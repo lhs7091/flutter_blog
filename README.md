@@ -1,5 +1,11 @@
 # flutter_blog
 
+## TODO
+  1. when call /api/v1/board, user id compare with user info of board. if equal, go ahead, not eaual, error
+  2. reply function(Logic, UXUI)
+  3. deploy heroku
+  4. real function check by app 
+
 ## Implement  
   1. BeckEnd : Springboot  
   2. FrontEnd : Flutter  
@@ -47,7 +53,6 @@
 |admin function  |/api/v1/admin/**  |ROLE_ADMIN |
 
 
-
 ## API
 
 ### UserController
@@ -58,6 +63,28 @@
 | 3   | change user information | put          | /api/v1/user/{userId}              | `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`  "username" : "username", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "email": "email", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "currentPassword": "currentPassword", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "newPassword": @NullAble "newPassword" `<br>`}`|  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": {`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"username": "username",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"email": "email",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"role": "role"`<br>&nbsp;&nbsp;&nbsp;&nbsp;`}`<br>`}`|
 | 4   | delete user             | delete       | /api/v1/user/{userId}              |                                                                                                                                                                                                                                                                      |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": "회원삭제 완료 userId : 1"`<br>`}`|
 
+
+### BoardController
+| No. | name                    | mapping type |  URL                               | RequestBody                                                                                                                                                                                                                                                          | Response                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+|-----|-------------------------|--------------|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1   | write board                 | POST         | /api/v1/board/{user id}                     | `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`  "title" : "title", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "content": "content" `<br>`}`                                                                                       |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": {`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"title": "title123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"content": "content123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"user": {` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": "2",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"username":"test",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"email": "test@test.com",` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"roles":"ROLE_USER",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`},`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"replys": "replys",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"` <br>&nbsp;&nbsp;&nbsp;&nbsp;`}`<br>`}`|                                                     
+| 2   | update board                 | PUT         | /api/v1/board/{board id}                     | `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`  "title" : "title", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "content": "content" `<br>`}`                                                                                       |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": {`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"title": "title123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"content": "content123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"user": {` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": "2",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"username":"test",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"email": "test@test.com",` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"roles":"ROLE_USER",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`},`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"replys": "replys",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"` <br>&nbsp;&nbsp;&nbsp;&nbsp;`}`<br>`}`| 
+| 3   | delete board                 | DELETE         | /api/v1/board/{board id}                     | `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`  "title" : "title", ` <br>&nbsp;&nbsp;&nbsp;&nbsp; ` "content": "content" `<br>`}`                                                                                       |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": null` <br>&nbsp;&nbsp;&nbsp;&nbsp;`}`<br>`}`| 
+| 4   | get all board                 | GET         | /api/v1/board                     |                                                                                        |  `{`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"code": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"msg": "SUCCESS",`<br>&nbsp;&nbsp;&nbsp;&nbsp;`"data": [ {`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": 1,`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"title": "title123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"content": "content123",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"user": {` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"id": "2",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"username":"test",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"email": "test@test.com",` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"roles":"ROLE_USER",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`},`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"replys": "replys",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"created": "2021-11-03T16:02:26.602667",`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`"updated": "2021-11-03T16:02:26.602667"` <br>&nbsp;&nbsp;&nbsp;&nbsp;`} ]`<br>`}`| 
+
+## Exception Handler
+Implement expcetion class for total project with @RestControllerAdvice annotation.   
+So all of exception can be controlled simply.
+```
+@RestControllerAdvice
+public class ResponseException {
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    ResponseEntity<ResForm<String>> handlerIllegalArgumentException(IllegalArgumentException e){
+        return createResult(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), e.getMessage());
+    }
+}
+```
 
 ## Global URL Implement
 1. Install npm
