@@ -9,11 +9,13 @@ import com.lhs.blogapi.service.CommonService;
 import com.lhs.blogapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.List;
 
 import static com.lhs.blogapi.util.Utils.headerKey;
@@ -37,9 +39,10 @@ public class BoardController {
 
     // 글쓰기
     @PostMapping("/{userid}")
+    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<ResForm<Board>> writeBoard(@PathVariable Long userid, @RequestBody BoardForm boardForm){
         Board board = boardService.writeBoard(userid, boardForm);
-        return createResult(200, "SUCCESS", board, "post");
+        return createResult(201, "SUCCESS", board, "post");
     }
 
     // 글 수정하기
@@ -66,7 +69,7 @@ public class BoardController {
 
     <T> ResponseEntity<ResForm<T>> createResult(int code, String msg, T data, String mappingType){
         if("post".equals(mappingType)){
-            return ResponseEntity.created(null).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
+            return ResponseEntity.created(URI.create("")).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
         }
         return ResponseEntity.ok().header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
     }

@@ -1,6 +1,5 @@
 package com.lhs.blogapi.controller;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lhs.blogapi.controller.dto.ResForm;
 import com.lhs.blogapi.controller.dto.ResUserInfo;
@@ -21,6 +20,7 @@ import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,14 +34,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final UserService userService;
-    private static Algorithm algorithm = Algorithm.HMAC512(Utils.SECRET_KEY);
 
     // 회원가입
     @PostMapping("/signUp")
     @ResponseStatus(code = HttpStatus.CREATED)
     ResponseEntity<ResForm<ResUserInfo>> signUp(@RequestBody SignUpForm form){
         User saveUser = userService.signUp(new User(null, form.getUsername(), form.getEmail(), form.getPassword(), Role.ROLE_USER, null, null));
-        return createResult(200, "SUCCESS", changeUserToUserInfoClass(saveUser), "post");
+        return createResult(201, "SUCCESS", changeUserToUserInfoClass(saveUser), "post");
     }
 
     // 회원정보조회
@@ -50,7 +49,7 @@ public class UserController {
     ResponseEntity<ResForm<ResUserInfo>> findUser(@PathVariable String username) {
         User findUser = userService.findOneUser(username);
         if(findUser == null){
-            return createResult(200, "SUCCESS", null, "get");
+            return createResult(200, "NO_RECORD", null, "get");
         }
         return createResult(200, "SUCCESS", changeUserToUserInfoClass(findUser), "get");
     }
@@ -59,7 +58,7 @@ public class UserController {
     @GetMapping("/user")
     ResponseEntity<ResForm<List<ResUserInfo>>> findAllUser(){
         List<User> findAllUser = userService.findAllUser();
-        List<ResUserInfo> resUserInfoList = findAllUser.stream().map(u -> changeUserToUserInfoClass(u)).collect(Collectors.toList());
+        List<ResUserInfo> resUserInfoList = findAllUser.stream().map(this::changeUserToUserInfoClass).collect(Collectors.toList());
         return createResult(200, "SUCCESS", resUserInfoList, "get");
     }
 
@@ -78,7 +77,7 @@ public class UserController {
         User account = commonService.checkAuthenticationInfo(request).orElseThrow(() -> new AuthenticationException("Authentication error"));
 
         boolean isManagerOrAdmin = !account.getRoles().equals(Role.ROLE_USER);
-        if(account.getId() != userId && !isManagerOrAdmin){
+        if(!userId.equals(account.getId()) && !isManagerOrAdmin){
             throw new IllegalArgumentException("Account Owner or Manager, Admin only can change user information");
         }
 
@@ -93,7 +92,7 @@ public class UserController {
         CommonService commonService = new CommonService(userService);
         User account = commonService.checkAuthenticationInfo(request).orElseThrow(()->new AuthenticationException("Authentication error"));
 
-        if(account.getId() != userId && account.getRoles().equals(Role.ROLE_USER)){
+        if(!userId.equals(account.getId()) && account.getRoles().equals(Role.ROLE_USER)){
             throw new IllegalArgumentException("Account Owner or Manager, Admin only can delete user information");
         }
 
@@ -105,7 +104,7 @@ public class UserController {
         String headerKey = "Content-Type";
         String headerValue = "application/json; charset=UTF-8";
         if("post".equals(mappingType)){
-            return ResponseEntity.created(null).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
+            return ResponseEntity.created(URI.create("")).header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
         }
         return ResponseEntity.ok().header(headerKey, headerValue).body(new ResForm<>(code, msg, data));
     }
