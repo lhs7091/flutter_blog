@@ -2,6 +2,7 @@ package com.lhs.blogapi.service;
 
 import com.lhs.blogapi.controller.dto.BoardForm;
 import com.lhs.blogapi.domain.Board;
+import com.lhs.blogapi.domain.Role;
 import com.lhs.blogapi.domain.User;
 import com.lhs.blogapi.repository.BoardRepository;
 import com.lhs.blogapi.repository.UserRepository;
@@ -35,11 +36,16 @@ public class BoardService {
         return saveBoard;
     }
 
-    public Board updateBoard(Long boardid, BoardForm boardForm) {
-        Board findBoard = boardRepository.findById(boardid).orElse(null);
+    public Board updateBoard(Long boardId, BoardForm boardForm, User account) {
+        Board findBoard = boardRepository.findById(boardId).orElse(null);
         if (findBoard == null){
             throw new IllegalArgumentException("Illegal Board Information");
         }
+
+        if (findBoard.getUser().getId() != account.getId() && Role.ROLE_USER.equals(account.getRoles())){
+            throw new IllegalArgumentException(String.format("Account Owner only can update this Board, boardId : %s", boardId));
+        }
+
         findBoard.setTitle(boardForm.getTitle());
         findBoard.setContent(boardForm.getContent());
         Board updateBoard = boardRepository.save(findBoard);
@@ -47,11 +53,19 @@ public class BoardService {
         return updateBoard;
     }
 
-    public void deleteBoard(Long boardid) {
-        Board findBoard = boardRepository.findById(boardid).orElse(null);
+    public void deleteBoard(Long boardId, User account) {
+        Board findBoard = boardRepository.findById(boardId).orElse(null);
+
         if (findBoard == null){
             throw new IllegalArgumentException("Illegal Board Information");
         }
-        boardRepository.delete(findBoard);
+
+        if (findBoard.getUser().getId() == account.getId() || !Role.ROLE_USER.equals(account.getRoles())){
+            boardRepository.delete(findBoard);
+            return;
+        }
+
+        throw new IllegalArgumentException(String.format("Account Owner only can update this Board, boardId : %s", boardId));
+
     }
 }

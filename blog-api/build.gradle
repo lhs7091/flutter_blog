@@ -32,6 +32,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.auth0/java-jwt
     implementation 'com.auth0:java-jwt:3.18.2'
+
+    // embeded db for test
 }
 
 test {

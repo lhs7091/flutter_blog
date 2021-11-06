@@ -1,9 +1,6 @@
 package com.lhs.blogapi.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lhs.blogapi.controller.dto.ResForm;
 import com.lhs.blogapi.controller.dto.ResUserInfo;
@@ -11,16 +8,16 @@ import com.lhs.blogapi.controller.dto.SignUpForm;
 import com.lhs.blogapi.controller.dto.UserModifyForm;
 import com.lhs.blogapi.domain.Role;
 import com.lhs.blogapi.domain.User;
+import com.lhs.blogapi.service.CommonService;
 import com.lhs.blogapi.service.UserService;
 import com.lhs.blogapi.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final UserService userService;
+    private static Algorithm algorithm = Algorithm.HMAC512(Utils.SECRET_KEY);
 
     // 회원가입
     @PostMapping("/signUp")
@@ -49,8 +47,11 @@ public class UserController {
     // 회원정보조회
     @GetMapping("/user/{username}")
     // TODO : https://www.youtube.com/watch?v=9So7UcSRqIc&ab_channel=FlutterMentor, SearchDelegate class of Flutter
-    ResponseEntity<ResForm<ResUserInfo>> findUser(@PathVariable String username){
+    ResponseEntity<ResForm<ResUserInfo>> findUser(@PathVariable String username) {
         User findUser = userService.findOneUser(username);
+        if(findUser == null){
+            return createResult(200, "SUCCESS", null, "get");
+        }
         return createResult(200, "SUCCESS", changeUserToUserInfoClass(findUser), "get");
     }
 
@@ -71,14 +72,31 @@ public class UserController {
 
     // 회원 정보 변경
     @PutMapping("/user/{userId}")
-    ResponseEntity<ResForm<ResUserInfo>> changeUserInfo(@PathVariable Long userId, @RequestBody UserModifyForm form){
+    ResponseEntity<ResForm<ResUserInfo>> changeUserInfo(@PathVariable Long userId, @RequestBody UserModifyForm form, HttpServletRequest request) throws AuthenticationException{
+        CommonService commonService = new CommonService(userService);
+        // only account owner or manager, admin can change
+        User account = commonService.checkAuthenticationInfo(request).orElseThrow(() -> new AuthenticationException("Authentication error"));
+
+        boolean isManagerOrAdmin = !account.getRoles().equals(Role.ROLE_USER);
+        if(account.getId() != userId && !isManagerOrAdmin){
+            throw new IllegalArgumentException("Account Owner or Manager, Admin only can change user information");
+        }
+
         User updateUserInfo = userService.changeUserInfo(userId, form);
+
         return createResult(200, "SUCCESS", changeUserToUserInfoClass(updateUserInfo), "put");
     }
 
     // 회원탈퇴
     @DeleteMapping("/user/{userId}")
-    ResponseEntity<ResForm<String>> deleteUser(@PathVariable Long userId){
+    ResponseEntity<ResForm<String>> deleteUser(@PathVariable Long userId, HttpServletRequest request) throws AuthenticationException {
+        CommonService commonService = new CommonService(userService);
+        User account = commonService.checkAuthenticationInfo(request).orElseThrow(()->new AuthenticationException("Authentication error"));
+
+        if(account.getId() != userId && account.getRoles().equals(Role.ROLE_USER)){
+            throw new IllegalArgumentException("Account Owner or Manager, Admin only can delete user information");
+        }
+
         userService.deleteUser(userId);
         return createResult(200, "SUCCESS", String.format("회원삭제 완료 userId : %s", userId), "delete");
     }
@@ -94,39 +112,25 @@ public class UserController {
 
     // refresh 토큰
     @GetMapping("/token/refresh")
-    void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, AuthenticationException {
         log.info("refresh token call");
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith(Utils.BEARER)){
+        CommonService commonService = new CommonService(userService);
+        User user = commonService.checkAuthenticationInfo(request).orElseThrow(() -> new AuthenticationException(""));
+        String refresh_token = authorizationHeader.substring(Utils.BEARER.length());
 
-            // 토큰 정보에 있는 payload를 평문으로 변환
-            String refresh_token = authorizationHeader.substring(Utils.BEARER.length());
-            Algorithm algorithm = Algorithm.HMAC512(Utils.SECRET_KEY);
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            DecodedJWT decodedJWT = verifier.verify(refresh_token);
+        String access_token = commonService.reIssueToken(request, user);
 
-            String username = decodedJWT.getSubject();
-            User user = userService.findOneUser(username);
+        log.info("access token re-issue completed");
 
-            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(user.getRoles().name()));
-            String access_token = JWT.create()
-                    .withSubject(user.getUsername())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + Utils.ACC_EXPIRE))
-                    .withIssuer(request.getRequestURL().toString())
-                    .withClaim("roles", authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                    .sign(algorithm);
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("access_token", access_token);
+        tokens.put("refresh_token", refresh_token);
 
-            log.info("access token 재발급 완료");
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("access_token", access_token);
-            tokens.put("refresh_token", refresh_token);
-
-            response.setContentType(APPLICATION_JSON_VALUE);
-            new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-        }
     }
 
     ResUserInfo changeUserToUserInfoClass(User user){
