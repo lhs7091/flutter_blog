@@ -12,7 +12,7 @@ class UserController extends GetxController {
         SignUpRequestDto(username, email, password);
     ResponseDto responseDto = await _userRepository.signUp(signUpRequestDto);
 
-    if (responseDto.code == 200)
+    if (responseDto.code == 201)
       return 1;
     else
       return responseDto.data;

@@ -57,8 +57,10 @@ class HomeScreen extends StatelessWidget {
                       const EdgeInsets.only(bottom: 80, left: 20, right: 20),
                   itemCount: _boardController.boards.length,
                   itemBuilder: (context, index) {
-                    return buildBoardCard(_boardController
-                        .boards[_boardController.boards.length - index - 1]);
+                    return buildBoardCard(
+                        context,
+                        _boardController.boards[
+                            _boardController.boards.length - index - 1]);
                   },
                 ),
           onRefresh: () async {
@@ -75,7 +77,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildBoardCard(Board board) {
+  Widget buildBoardCard(context, Board board) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -121,10 +123,17 @@ class HomeScreen extends StatelessWidget {
                       board.user!.userid.toString()
                   ? IconButton(
                       onPressed: () async {
-                        var result =
-                            await _boardController.deleteBoard(board.id);
-                        if (result != 1) {
-                          Get.snackbar("Failed", result);
+                        var deleteOrNot = await displayDialogOKCallBack(
+                          context,
+                          "Delete Board",
+                          "Do you want to delete?",
+                        );
+                        if (deleteOrNot) {
+                          var result =
+                              await _boardController.deleteBoard(board.id);
+                          if (result != 1) {
+                            Get.snackbar("Failed", result);
+                          }
                         }
                       },
                       icon: Icon(

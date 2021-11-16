@@ -1,4 +1,4 @@
-const host = "https://cold-bat-9.loca.lt";
+const host = "https://hungry-impala-89.loca.lt";
 
 String accessKey = "";
 String refreshKey = "";

@@ -113,7 +113,7 @@ class SignUpScreen extends StatelessWidget {
                   // 회원가입완료
                   if (result == 1)
                     showAlertDialog(context, "Sign Up SUCCESS", "Please login",
-                        sucessSignUp(context), "OK");
+                        sucessButton(context), "OK");
                   else
                     Get.snackbar("SignUp Failed", "$result");
                 }

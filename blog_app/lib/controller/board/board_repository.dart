@@ -30,7 +30,7 @@ class BoardRepository {
 
     ResponseDto responseDto = ResponseDto.fromJson(convertBody);
 
-    if (responseDto.code == 200) {
+    if (responseDto.code == 201) {
       return Board.fromJson(responseDto.data);
     } else if (res.statusCode == 403) {
       log(convertBody["error_message"]);

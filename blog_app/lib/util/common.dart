@@ -12,7 +12,7 @@ showAlertDialog(BuildContext context, String title, String content,
     dynamic onPressed, String ok) {
   Widget okButton = TextButton(
     onPressed: onPressed,
-    child: Text("OK"),
+    child: Text(ok),
   );
 
   AlertDialog alertDialog = AlertDialog(
@@ -30,8 +30,43 @@ showAlertDialog(BuildContext context, String title, String content,
       });
 }
 
-sucessSignUp(BuildContext context) => () {
+sucessButton(BuildContext context) => () {
       Get.offAll(() => LoginScreen());
+    };
+Future<bool> displayDialogOKCallBack(
+    BuildContext context, String title, String content) async {
+  return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            ElevatedButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                // true here means you clicked ok
+              },
+            ),
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                // true here means you clicked ok
+              },
+            ),
+          ],
+        );
+      });
+}
+
+deleteYesButton(BuildContext context) => () {
+      return Navigator.of(context).pop(true);
+    };
+
+deleteNolButton(BuildContext context) => () {
+      return Navigator.of(context).pop(false);
     };
 
 expiredToken(BuildContext context) => () async {
@@ -42,6 +77,6 @@ expiredToken(BuildContext context) => () async {
         Get.snackbar("Authentication Success", "");
       } else {
         showAlertDialog(context, "Authentication Failed", "please login again",
-            sucessSignUp(context), "OK");
+            sucessButton(context), "OK");
       }
     };

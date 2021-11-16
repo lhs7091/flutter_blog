@@ -176,7 +176,8 @@ class UserInfoEditScreen extends StatelessWidget {
                       _currentPassController.text.trim(),
                       _newPassController.text.trim());
                   if (result == "1")
-                    Get.off(() => UserInfoScreen());
+                    showAlertDialog(context, "Update Success",
+                        "Please re-login", sucessButton(context), "OK");
                   else if (result == "-1") {
                     Get.snackbar("Edit Failed",
                         "Please try again due to internal problem");

@@ -60,9 +60,9 @@ class UserRepository {
           log(responseDto.data);
           return responseDto.data;
         }
-      } else if (res.statusCode == 403) {
-        log(convertBody["error_message"]);
-        return convertBody["error_message"];
+      } else if (res.statusCode == 400) {
+        log(convertBody["data"]);
+        return convertBody["data"];
       } else if (res.statusCode == 404) {
         log("404 not found");
         return "Illegal URL";

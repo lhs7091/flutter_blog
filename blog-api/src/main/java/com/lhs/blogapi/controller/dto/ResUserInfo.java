@@ -16,5 +16,5 @@ public class ResUserInfo {
 
     private String email;
 
-    private Role role;
+    private Role roles;
 }
