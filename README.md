@@ -11,6 +11,9 @@
   2. FrontEnd : Flutter  
   3. DB : H2
 
+## App Implement
+<img src="https://github.com/lhs7091/flutter_blog/blob/master/picture/flutter_blog.gif" width="240">
+
 ## Spring security
 1. [JWT(Json Web Token)](https://jwt.io)
   - JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair using RSA or ECDSA.
