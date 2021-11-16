@@ -113,3 +113,19 @@ npm notice
 aaa@aaa-MacBookAir ~ % lt --port 8080            
 your url is: https://bright-chicken-22.loca.lt
 ```
+
+## heroku release
+ - [Heroku java version](https://devcenter.heroku.com/articles/java-support#supported-java-versions)
+ 
+ - [relase complete](https://fierce-beyond-79329.herokuapp.com)
+
+## app.apk
+ - build : flutter build appbundle --target-platform android-arm,android-arm64
+ - [download](https://drive.google.com/file/d/1DKaDflJfDK0vh2iXeWojYff936ijW2Up/view?usp=sharing)
+
+## api log check
+```
+2021-11-16T07:24:19.317893+00:00 heroku[router]: at=info method=POST path="/api/v1/signUp" host=fierce-beyond-79329.herokuapp.com request_id=71f3a300-1740-463a-8677-10ddadbd5df9 fwd="126.186.239.57" dyno=web.1 connect=0ms service=998ms status=201 bytes=523 protocol=https
+2021-11-16T07:31:31.992692+00:00 heroku[router]: at=info method=POST path="/api/login" host=fierce-beyond-79329.herokuapp.com request_id=9767aa2c-d20e-40fe-a6ca-513cfa36f6dc fwd="126.186.239.57" dyno=web.1 connect=0ms service=256ms status=200 bytes=1015 protocol=https
+```
+ 
