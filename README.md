@@ -4,7 +4,7 @@
   1. ~~when call /api/v1/board, user id compare with user info of board. if equal, go ahead, not eaual, error~~  
   2. reply function(Logic, UXUI)
   3. ~~deploy heroku~~
-  4. real function check by app 
+  4. ~~real function check by app~~
 
 ## Implement  
   1. BeckEnd : Springboot  
