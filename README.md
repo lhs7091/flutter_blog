@@ -120,7 +120,7 @@ your url is: https://bright-chicken-22.loca.lt
  - [relase complete](https://fierce-beyond-79329.herokuapp.com)
 
 ## app.apk
- - build : flutter build appbundle --target-platform android-arm,android-arm64
+ - build : flutter build apk --target-platform android-arm,android-arm64
  - [download](https://drive.google.com/file/d/1DKaDflJfDK0vh2iXeWojYff936ijW2Up/view?usp=sharing)
 
 ## api log check
